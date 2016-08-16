@@ -1,13 +1,66 @@
 package com.aveteam.avewallpaper.Model;
 
+import java.io.Serializable;
+
 /**
- * Created by Lorenzo on 09/08/2016.
+ * Created by Lorenzo on 16/08/2016.
  */
-public class Image{
+public class Image implements Serializable {
     String string;
     int state;
-    public Image(String s){
-        this.string=s;
+
+    private String name;
+    private String small, medium, large;
+    private String timestamp;
+
+    public Image(){}
+
+    public Image(String name, String small, String medium, String large, String timestamp) {
+        this.name = name;
+        this.small = small;
+        this.medium = medium;
+        this.large = large;
+        this.timestamp = timestamp;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSmall() {
+        return small;
+    }
+
+    public void setSmall(String small) {
+        this.small = small;
+    }
+
+    public String getMedium() {
+        return medium;
+    }
+
+    public void setMedium(String medium) {
+        this.medium = medium;
+    }
+
+    public String getLarge() {
+        return large;
+    }
+
+    public void setLarge(String large) {
+        this.large = large;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getString() {
@@ -26,3 +79,4 @@ public class Image{
         this.state = state;
     }
 }
+

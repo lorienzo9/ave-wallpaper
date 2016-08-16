@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,16 +24,28 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.aveteam.avewallpaper.Adapter.ImageAdapter;
 import com.aveteam.avewallpaper.Model.Image;
 import com.aveteam.avewallpaper.R;
+import com.aveteam.avewallpaper.app.AppController;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private GridView lista;
-    ImageAdapter AdapterIm = new ImageAdapter(this);
+    private ArrayList<Image> images;
+    private ImageAdapter AdapterIm;
+    private String TAG = MainActivity.class.getSimpleName();
+    private static final String endpoint = "http://www.gnexushd.altervista.org/beta/wall/wall.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +59,15 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View v,
                                     final int position, long id) {
 
-                // Sending image id to FullScreenActivity
+                // Sending image id to MenuViewPager
                 Intent i = new Intent(getApplicationContext(), MenuPagerViewer.class);
                 // passing array index
-                i.putExtra("id", position);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("images", images);
+                bundle.putInt("id", position);
+                //  i.putExtra("id", position);
+                i.putExtras(bundle);
                 startActivity(i);
-
             }
         });
 
@@ -177,4 +193,44 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+    private void fetchImages() {
+
+        JsonArrayRequest req = new JsonArrayRequest(endpoint,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d(TAG, response.toString());
+
+                        images.clear();
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject object = response.getJSONObject(i);
+                                Image image = new Image();
+                                image.setName(object.getString("name"));
+
+                                JSONObject url = object.getJSONObject("url");
+                                image.setSmall(url.getString("small"));
+                                image.setMedium(url.getString("medium"));
+                                image.setLarge(url.getString("large"));
+                                image.setTimestamp(object.getString("timestamp"));
+                                images.add(image);
+
+                            } catch (JSONException e) {
+                                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                            }
+                        }
+
+                        AdapterIm.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "Error: " + error.getMessage());
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(req);
+    }
+
 }

@@ -1,13 +1,16 @@
 package com.aveteam.avewallpaper.Adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.aveteam.avewallpaper.R;
+import com.koushikdutta.ion.Ion;
+
+import java.util.List;
 
 /**
  * Created by Lorenzo on 02/08/2016.
@@ -15,18 +18,21 @@ import com.aveteam.avewallpaper.R;
 public class ImageAdapter extends BaseAdapter  {
 
     private Context mcontext;
+    private List<com.aveteam.avewallpaper.Model.Image> images;
 
     @Override
     public int getCount() {
-        return Thumbs.length;
+        return this.images.size();
     }
-    public ImageAdapter(Context context){
-        mcontext = context;
+
+    public ImageAdapter(Context context,List<com.aveteam.avewallpaper.Model.Image> image){
+        this.mcontext = context;
+        this.images = image;
     }
 
     @Override
     public Object getItem(int i) {
-        return Thumbs[i];
+        return this.images.get(i);
     }
 
     @Override
@@ -36,6 +42,8 @@ public class ImageAdapter extends BaseAdapter  {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+        com.aveteam.avewallpaper.Model.Image image = images.get(i);
+
         ImageView imageView;
         if (view==null){
             imageView = new ImageView(mcontext);
@@ -45,14 +53,16 @@ public class ImageAdapter extends BaseAdapter  {
         }else{
             imageView = (ImageView)view;
         }
-        imageView.setImageResource(Thumbs[i]);
+        // imageView.setImageResource(Thumbs[i]);
+        Ion.with(mcontext).load(image.getSmall()).intoImageView(imageView);
+
         return imageView;
     }
-    public static Integer[] Thumbs={
+   /* public static Integer[] Thumbs={
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,
             R.mipmap.ic_launcher
 
-    };
+    };*/
 }
