@@ -9,6 +9,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.koushikdutta.ion.Ion;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -47,14 +48,14 @@ public class ImageAdapter extends BaseAdapter  {
         ImageView imageView;
         if (view==null){
             imageView = new ImageView(mcontext);
-            imageView.setLayoutParams(new GridView.LayoutParams(300, 300));
+            imageView.setLayoutParams(new GridView.LayoutParams(600, 600));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8,8,8,8);
+            imageView.setPadding(1,1,1,0);
         }else{
             imageView = (ImageView)view;
         }
         // imageView.setImageResource(Thumbs[i]);
-        Ion.with(mcontext).load(image.getSmall()).intoImageView(imageView);
+        Picasso.with(mcontext).load(image.getSmall()).resize(200, 200).into(imageView);
 
         return imageView;
     }

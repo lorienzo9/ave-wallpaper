@@ -25,8 +25,6 @@ public class SplashScreen extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String time = "2016-12-25";
 
         if (Build.MODEL.equals("ASUS_Z00AD")){
             setContentView(R.layout.splash_screen2);

@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
     private GridView lista;
     private ArrayList<Image> images;
     private ImageAdapter AdapterIm;
@@ -52,6 +54,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        images = new ArrayList<>();
+        AdapterIm = new ImageAdapter(MainActivity.this, images);
+
         lista = (GridView)findViewById(R.id.list);
         lista.setAdapter(AdapterIm);
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,7 +65,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View v,
                                     final int position, long id) {
 
-                // Sending image id to MenuViewPager
+                // Sending image id to FullScreenActivity
                 Intent i = new Intent(getApplicationContext(), MenuPagerViewer.class);
                 // passing array index
                 Bundle bundle = new Bundle();
@@ -68,6 +74,7 @@ public class MainActivity extends AppCompatActivity
                 //  i.putExtra("id", position);
                 i.putExtras(bundle);
                 startActivity(i);
+
             }
         });
 
@@ -89,6 +96,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        fetchImages();
     }
 
     @Override
@@ -128,18 +137,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if  (id == R.id.nav_gallery) {
             Galleria();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
         } else if (id == R.id.nav_share) {
             share();
         } else if (id == R.id.nav_send) {
             contactUs();
+        }else if (id == R.id.info){
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -193,6 +198,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+
     private void fetchImages() {
 
         JsonArrayRequest req = new JsonArrayRequest(endpoint,
@@ -234,3 +241,4 @@ public class MainActivity extends AppCompatActivity
     }
 
 }
+

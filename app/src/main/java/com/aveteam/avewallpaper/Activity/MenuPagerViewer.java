@@ -53,11 +53,12 @@ public class MenuPagerViewer extends AppCompatActivity {
         ImageAdapter imageAdapter = new ImageAdapter(this);
 */
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        Ion.with(this).load(image.getLarge()).intoImageView(imageView);
+        Picasso.with(this).load(image.getLarge()).into(imageView);
 
         // imageView.setImageResource(ImageAdapter.Thumbs[position]);
 
         fab = (FloatingActionButton)findViewById(R.id.fab_setwall);
+        fab.setImageResource(R.mipmap.fab_blu);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
