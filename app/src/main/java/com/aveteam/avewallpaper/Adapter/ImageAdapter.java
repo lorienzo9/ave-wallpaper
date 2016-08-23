@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.aveteam.avewallpaper.Model.SquardeImage;
 import com.koushikdutta.ion.Ion;
 import com.squareup.picasso.Picasso;
 
@@ -45,19 +47,16 @@ public class ImageAdapter extends BaseAdapter  {
     public View getView(int i, View view, ViewGroup viewGroup) {
         com.aveteam.avewallpaper.Model.Image image = images.get(i);
 
-        ImageView imageView;
-        if (view==null){
-            imageView = new ImageView(mcontext);
-            imageView.setLayoutParams(new GridView.LayoutParams(600, 600));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(1,1,1,0);
-        }else{
-            imageView = (ImageView)view;
+        SquardeImage v = (SquardeImage) view;
+        if (v == null) {
+            v = new SquardeImage(mcontext);
+            v.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
-        // imageView.setImageResource(Thumbs[i]);
-        Picasso.with(mcontext).load(image.getSmall()).resize(200, 200).into(imageView);
 
-        return imageView;
+        // imageView.setImageResource(Thumbs[i]);
+        Picasso.with(mcontext).load(image.getSmall()).centerCrop().resize(200, 200).into(v);
+
+        return v;
     }
    /* public static Integer[] Thumbs={
             R.mipmap.ic_launcher, R.mipmap.ic_launcher,

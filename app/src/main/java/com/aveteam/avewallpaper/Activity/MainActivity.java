@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.icu.util.VersionInfo;
 import android.net.Uri;
 import android.os.Build;
@@ -11,6 +12,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,6 +25,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -29,6 +35,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.aveteam.avewallpaper.Adapter.ImageAdapter;
+import com.aveteam.avewallpaper.Adapter.ViewPagerAdapter;
 import com.aveteam.avewallpaper.Model.Image;
 import com.aveteam.avewallpaper.R;
 import com.aveteam.avewallpaper.app.AppController;
@@ -43,11 +50,12 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private GridView lista;
-    private ArrayList<Image> images;
-    private ImageAdapter AdapterIm;
-    private String TAG = MainActivity.class.getSimpleName();
-    private static final String endpoint = "http://www.gnexushd.altervista.org/beta/wall/wall.json";
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private ViewPagerAdapter viewPagerAdapter;
+    CharSequence Titles[]={"Community","Home", "Top"};
+    int Numboftabs =3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,37 +63,65 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        images = new ArrayList<>();
-        AdapterIm = new ImageAdapter(MainActivity.this, images);
-
-        lista = (GridView)findViewById(R.id.list);
-        lista.setAdapter(AdapterIm);
-        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.addTab(tabLayout.newTab().setText("Community"));
+        tabLayout.addTab(tabLayout.newTab().setText("Home"));
+        tabLayout.addTab(tabLayout.newTab().setText("Top"));
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        //set the Adapter for the ViewPager
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs);
+        viewPager.setAdapter(viewPagerAdapter);
+        setSupportActionBar(toolbar);
+        viewPager.setCurrentItem(1);
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    final int position, long id) {
+            public void onTabSelected(TabLayout.Tab tab)
+            {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
 
-                // Sending image id to FullScreenActivity
-                Intent i = new Intent(getApplicationContext(), MenuPagerViewer.class);
-                // passing array index
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("images", images);
-                bundle.putInt("id", position);
-                //  i.putExtra("id", position);
-                i.putExtras(bundle);
-                startActivity(i);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab)
+            {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab)
+            {
+
+            }
+        });
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                                              @Override
+                                              public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                                              }
+
+                                              @Override
+                                              public void onPageSelected(int position) {
+                                                  switch (position) {
+                                                      case 0:
+
+                                                          break;
+                                                      case 1:
+
+                                                          break;
+                                                      case 2:
+                                                          break;
+                                                  }
+                                              }
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,7 +133,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        fetchImages();
     }
 
     @Override
@@ -199,46 +234,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    private void fetchImages() {
-
-        JsonArrayRequest req = new JsonArrayRequest(endpoint,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.d(TAG, response.toString());
-
-                        images.clear();
-                        for (int i = 0; i < response.length(); i++) {
-                            try {
-                                JSONObject object = response.getJSONObject(i);
-                                Image image = new Image();
-                                image.setName(object.getString("name"));
-
-                                JSONObject url = object.getJSONObject("url");
-                                image.setSmall(url.getString("small"));
-                                image.setMedium(url.getString("medium"));
-                                image.setLarge(url.getString("large"));
-                                image.setTimestamp(object.getString("timestamp"));
-                                images.add(image);
-
-                            } catch (JSONException e) {
-                                Log.e(TAG, "Json parsing error: " + e.getMessage());
-                            }
-                        }
-
-                        AdapterIm.notifyDataSetChanged();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, "Error: " + error.getMessage());
-            }
-        });
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(req);
-    }
 
 }
 
