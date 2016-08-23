@@ -1,2 +1,2 @@
-# ave-wallpaper, now tring to add AsyncTask
+# ave-wallpaper, just added bottom bar and implemented horizontal navigation
 
